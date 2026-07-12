@@ -1,3 +1,22 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.*
+
+# Build output
+dist
+dist-ssr
+build
+
+# Environment & secrets — NEVER commit these
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+secrets.*
+
 # Logs
 logs
 *.log
@@ -7,16 +26,19 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# Caches / build info
+.cache
+.vite
+.turbo
+*.tsbuildinfo
 
-# Editor directories and files
+# OS & editor files
+.DS_Store
+*.local
+Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 .idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
