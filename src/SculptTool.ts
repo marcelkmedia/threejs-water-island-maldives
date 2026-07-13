@@ -7,6 +7,11 @@ export type SculptMode = 'raise' | 'lower' | null;
  *  button and drag over the mesh to reshape it; the mouse wheel resizes the brush.
  *  Call update() each frame, and dispose() to remove its listeners. */
 export class SculptTool {
+  // What the brush works on. The `!` promises TypeScript the constructor sets these.
+  private mesh!: THREE.Mesh;
+  private camera!: THREE.PerspectiveCamera;
+  private canvas!: HTMLCanvasElement;
+
   private mode: SculptMode = null;
   private radius = 5;
   private sculpting = false;
@@ -16,14 +21,18 @@ export class SculptTool {
   private raycaster = new THREE.Raycaster();
   private ndc = new THREE.Vector2();
   private localHit = new THREE.Vector3();
-  private ring: THREE.Mesh;
+  private ring!: THREE.Mesh;
 
   constructor(
-    private mesh: THREE.Mesh,
-    private camera: THREE.PerspectiveCamera,
-    private canvas: HTMLCanvasElement,
+    mesh: THREE.Mesh,
+    camera: THREE.PerspectiveCamera,
+    canvas: HTMLCanvasElement,
     scene: THREE.Scene,
   ) {
+    this.mesh = mesh;
+    this.camera = camera;
+    this.canvas = canvas;
+
     // A ring on the ground that shows where the brush is and how big it is.
     const ringMat = new THREE.MeshBasicMaterial({
       color: 0x9be7a0,
