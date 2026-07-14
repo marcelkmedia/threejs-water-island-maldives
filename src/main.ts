@@ -1,6 +1,7 @@
 import * as THREE from 'three/webgpu';
 import { FlyCamera } from './FlyCamera';
 import { createTerrain } from './terrain';
+import { createOcean } from './ocean';
 
 // Grab the two elements we created in index.html.
 const canvas = document.querySelector<HTMLCanvasElement>('#app')!;
@@ -28,16 +29,16 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x7ec8e3); // tropical sky blue
 
-// Distance fog: fade the far sea floor into the sky colour toward the horizon.
-scene.fog = new THREE.Fog(0x7ec8e3, 20, 95);
+// Distance fog: fade the far sea into the sky colour toward the horizon.
+scene.fog = new THREE.Fog(0x7ec8e3, 30, 120);
 
 const camera = new THREE.PerspectiveCamera(
   60,                                     // field of view, in degrees
   window.innerWidth / window.innerHeight, // aspect ratio
   0.1,                                    // near clip plane
-  100,                                    // far clip plane
+  300,                                    // far clip plane (the sea is big)
 );
-camera.position.set(0, 10, 34); // up and back, looking out over the atoll
+camera.position.set(0, 6, 28); // lower and closer, out over the water
 
 // Set up the fly camera (defined in FlyCamera.ts).
 const dot = document.querySelector<HTMLDivElement>('#dot')!;
@@ -46,6 +47,10 @@ const flyCamera = new FlyCamera(camera, renderer.domElement, dot);
 // Build the atoll terrain (all the noise + shaping lives in terrain.ts).
 const ground = createTerrain();
 scene.add(ground);
+
+// The sea — a WGSL-animated water plane (see ocean.ts).
+const ocean = createOcean();
+scene.add(ocean.mesh);
 
 // Ambient light: a soft, even glow from all directions so nothing is pure black.
 const ambient = new THREE.AmbientLight(0xffffff, 0.6);
@@ -93,6 +98,9 @@ renderer.setAnimationLoop(() => {
 
   // Update the fly camera (mouse look + WASD movement).
   flyCamera.update(dt);
+
+  // Roll the ocean waves forward.
+  ocean.update(dt);
 
   // Count frames and refresh the readout about once a second.
   frames++;
